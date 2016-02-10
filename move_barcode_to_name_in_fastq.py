@@ -9,7 +9,11 @@ import argparse
 
 def move_barcode_to_name_in_fastq(filename, out_dir):
     if not os.path.exists(out_dir): os.system('mkdir ' + out_dir)
-    outf = open(out_dir + '/%s' % os.path.basename(filename), 'w')
+    outfilename = out_dir + '/%s' % os.path.basename(filename)
+    if os.path.exists(outfilename):
+        print "Output file {a} exists... Aborting...".format(a=outfilename)
+        raise IOError
+    outf = open(outfilename, 'w')
     fastq = HTSeq.FastqReader(filename)
     obs_let = set()
     # phred 33

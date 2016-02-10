@@ -1,3 +1,8 @@
+Three prime linker: TGAGATCGGAAGAGCGGTTCAG
+The BamHI cut site is after the final 3' G in the above sequence.
+We expect the above sequence to appear in the sense orientation when sequenced
+from read 1.
+
 
 *The indexed primers within each lane demarcate biological replicates and
 are: *

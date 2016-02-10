@@ -14,7 +14,6 @@ FOG-3:
 def split_by_barcode(initial_filename):
     outfiles = {}
     # Lane 1:
-    skip = """
     outfiles['GGTT'] = open('fbf1_sp_lane1_rt1.fastq', 'w')
     outfiles['TTGT'] = open('fbf2_sp_lane1_rt2.fastq', 'w')
     outfiles['CAAT'] = open('n2_oo_lane1_rt3.fastq', 'w')
@@ -25,8 +24,8 @@ def split_by_barcode(initial_filename):
     outfiles['AATA'] = open('n2_oo_lane1_rt15.fastq', 'w')
     outfiles['TTAA'] = open('n2_oo_lane1_rt16.fastq', 'w')
     missingf = open('no_recognized_barcode_lane1.fastq', 'w')
-"""
     # Lane 2:
+    skip = """
     outfiles['GGTT'] = open('fbf1_oo_lane2_rt1.fastq', 'w')
     outfiles['TTGT'] = open('fbf2_oo_lane2_rt2.fastq', 'w')
     outfiles['CCGG'] = open('fbf1_oo_lane2_rt6.fastq', 'w')
@@ -34,6 +33,7 @@ def split_by_barcode(initial_filename):
     outfiles['CGGA'] = open('fbf2_oo_lane2_rt13.fastq', 'w')
     outfiles['GGCA'] = open('fbf2_oo_lane2_rt11.fastq', 'w')
     missingf = open('no_recognized_barcode_lane2.fastq', 'w')
+"""
     fastq_file = HTSeq.FastqReader(initial_filename)
     total_reads = 0
     for read in fastq_file:
