@@ -9,3 +9,13 @@ First, the fastq files were split by barcode:
 The barcodes were moved to the read header: 
 
 	$ python move_barcode_to_name_in_fastq.py <fastq directory/>
+
+The three prime linker was removed:
+
+	$ python clip_adapter.py -t -i <in_dir> -o <out_dir>
+
+The RT primer was removed:
+
+	$ python clip_adapter.py -r -i <in_dir> -o <out_dir>
+
+
