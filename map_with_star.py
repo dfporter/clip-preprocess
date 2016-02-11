@@ -1,7 +1,6 @@
 """
-Takes no arguments.
-Calls the STAR mapper on everything in trimmed_cliped/*fastq and
-output to sams/. Then calls samtools view -q 20 to export filtered bam files
+Calls the STAR mapper and outputs to sams/.
+Then calls samtools view -q 20 to export filtered bam files
 to bams/.
 The unfilterefd sams are also converted to bedgraph in bedgraphs/.
 """

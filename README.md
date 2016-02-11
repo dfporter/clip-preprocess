@@ -18,4 +18,12 @@ The RT primer was removed:
 
 	$ python clip_adapter.py -r -i <in_dir> -o <out_dir>
 
+Reads were mapped to the genome:
+
+	$ python map_with_star.py -i <in_dir>
+
+TO DO: compare with the published STAR parameters from that comparison paper.
+
+This outputs both bams to bams/ and beds to bed_uncollapsed/.
+
 
