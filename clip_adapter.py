@@ -7,7 +7,6 @@ def scribe(cmd):
     print cmd
     os.system(cmd)
 
-
 def init():
     parser = argparse.ArgumentParser()
     parser.add_argument('-i', '--input_dir')
@@ -30,7 +29,8 @@ def init():
         print "One of the arguments -a, -t or -r must be used."
         sys.exit()
     if args.three_prime_linker:
-        args.adapter = 'AGATCGGAAGAGCGGTTCAG'
+        args.adapter = 'TGAGATCGGAAGAGCGGTTCAG'
+#        args.adapter = 'AGATCGGAAGAGCGGTTCAG'
     if args.rt_primer:
         args.adapter = 'AGATCGGAAGAGCGGTTCAGCAGGAATGCC'
     if args.input_dir == '.' or args.output_dir == '.':
@@ -52,8 +52,7 @@ def run():
         if os.path.exists(outfile):
             print "Output file {a} exists... Skipping...".format(a=outfile)
             continue
-        cmd = "fastx_clipper -n -a {seq}"
-        cmd += " -i {a} -o {b} -Q 33".format(
+        cmd = "fastx_clipper -n -a {seq} -i {a} -o {b} -Q 33".format(
             seq=args.adapter,
             a=infile, b=outfile)
         scribe(cmd)
