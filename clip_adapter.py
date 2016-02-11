@@ -15,7 +15,7 @@ def init():
     parser.add_argument('-a', '--adapter', default='')
     parser.add_argument('-t', '--three_prime_linker', default=False,
                         action='store_true')
-    parser.add_argument('-t', '--rt_primer', default=False,
+    parser.add_argument('-r', '--rt_primer', default=False,
                         action='store_true')
     args = parser.parse_args()
 
