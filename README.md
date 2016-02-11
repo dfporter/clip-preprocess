@@ -32,4 +32,12 @@ Bedgraphs were made with:
 
 Bedgraphs were normalized with:
 
-	$ python normalize_bedgraph.py <in_dir> <out_dir> 
+	$ python normalize_bedgraph.py <in_dir> <out_dir>
+
+Commands to run the duplicates-removal script from the Zhang lab were printed with a call to:
+
+	$ python write_commands_for_collapsing.py
+
+The commands output by this script were then run, outputing to bed_collapsed/.
+
+ 

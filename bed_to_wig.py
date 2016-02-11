@@ -71,8 +71,8 @@ nohup python /groups/Kimble/Common/fog_iCLIP/pre_calls/src/collapse_duplicate_ta
 nohup python /groups/Kimble/Common/fog_iCLIP/pre_calls/src/collapse_duplicate_tags_for_cims.py bed_uncollapsed/fbf1_oo_lane2_rt1.bed bed_collapsed/ > fbf1_oo_lane2_rt1.bed.log 2>&1 < /dev/null &
 nohup python /groups/Kimble/Common/fog_iCLIP/pre_calls/src/collapse_duplicate_tags_for_cims.py bed_uncollapsed/fbf1_sp_lane1_rt1.bed bed_collapsed/ > fbf1_sp_lane1_rt1.bed.log 2>&1 < /dev/null &
 nohup python /groups/Kimble/Common/fog_iCLIP/pre_calls/src/collapse_duplicate_tags_for_cims.py bed_uncollapsed/fbf2_oo_lane2_rt11.bed bed_collapsed/ > fbf2_oo_lane2_rt11.bed.log 2>&1 < /dev/null &
-
 nohup python /groups/Kimble/Common/fog_iCLIP/pre_calls/src/collapse_duplicate_tags_for_cims.py bed_uncollapsed/fbf1_sp_lane1_rt6.bed bed_collapsed/ > fbf1_sp_lane1_rt6.bed.log 2>&1 < /dev/null &
+
 nohup python /groups/Kimble/Common/fog_iCLIP/pre_calls/src/collapse_duplicate_tags_for_cims.py bed_uncollapsed/fbf1_sp_lane1_rt9.bed bed_collapsed/ > fbf1_sp_lane1_rt9.bed.log 2>&1 < /dev/null &
 nohup python /groups/Kimble/Common/fog_iCLIP/pre_calls/src/collapse_duplicate_tags_for_cims.py bed_uncollapsed/fbf2_sp_lane1_rt2.bed bed_collapsed/ > fbf2_sp_lane1_rt2.bed.log 2>&1 < /dev/null &
 nohup python /groups/Kimble/Common/fog_iCLIP/pre_calls/src/collapse_duplicate_tags_for_cims.py bed_uncollapsed/n2_oo_lane1_rt15.bed bed_collapsed/ > n2_oo_lane1_rt15.bed.log 2>&1 < /dev/null &
