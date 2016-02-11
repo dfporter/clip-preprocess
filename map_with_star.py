@@ -2,8 +2,7 @@
 Calls the STAR mapper and outputs to sams/.
 Then calls samtools view -q 20 to export filtered bam files
 to bams/.
-The unfilterefd sams are also converted to bedgraph in bedgraphs/.
-"""
+s"""
 
 import glob
 import sys

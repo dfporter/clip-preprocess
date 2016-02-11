@@ -26,4 +26,10 @@ TO DO: compare with the published STAR parameters from that comparison paper.
 
 This outputs both bams to bams/ and beds to bed_uncollapsed/.
 
+Bedgraphs were made with:
 
+	$ python bed_to_wig.py <in_dir> <out_dir>
+
+Bedgraphs were normalized with:
+
+	$ python normalize_bedgraph.py <in_dir> <out_dir> 
