@@ -15,8 +15,8 @@ def normalize_wig(_folder, out_dir):
         outli = next(bed_fh)  # Skip header.
         for line in bed_fh:
             s = line.rstrip('\n').split('\t')
-            outli += '\t'.join(s[:3]) + str(1e6 * float(s[3])/total_reads)
-            outli += '\n'
+            outli += '\t'.join(s[:3]) + '\t' 
+            outli += str(1e6 * float(s[3])/total_reads) + '\n'
         open(out_bed, 'w').write(outli)        
 
 if __name__ == "__main__":

@@ -59,7 +59,25 @@ def run(indir, outdir):
     ga_all_control.write_bedgraph_file(outdir + '/all_control_+.wig', strand='+')
     ga_all_control.write_bedgraph_file(outdir + '/all_control_-.wig', strand='-')
 
+'''
+nohup python /groups/Kimble/Common/fog_iCLIP/pre_calls/src/collapse_duplicate_tags_for_cims.py bed_uncollapsed/fbf1_oo_lane2_rt6.bed bed_collapsed/ > fbf1_oo_lane2_rt6.bed.log 2>&1 < /dev/null &
+nohup python /groups/Kimble/Common/fog_iCLIP/pre_calls/src/collapse_duplicate_tags_for_cims.py bed_uncollapsed/fbf1_oo_lane2_rt9.bed bed_collapsed/ > fbf1_oo_lane2_rt9.bed.log 2>&1 < /dev/null &
+nohup python /groups/Kimble/Common/fog_iCLIP/pre_calls/src/collapse_duplicate_tags_for_cims.py bed_uncollapsed/fbf2_oo_lane2_rt2.bed bed_collapsed/ > fbf2_oo_lane2_rt2.bed.log 2>&1 < /dev/null &
+nohup python /groups/Kimble/Common/fog_iCLIP/pre_calls/src/collapse_duplicate_tags_for_cims.py bed_uncollapsed/fbf2_sp_lane1_rt13.bed bed_collapsed/ > fbf2_sp_lane1_rt13.bed.log 2>&1 < /dev/null &
+nohup python /groups/Kimble/Common/fog_iCLIP/pre_calls/src/collapse_duplicate_tags_for_cims.py bed_uncollapsed/fbf2_oo_lane2_rt13.bed bed_collapsed/ > fbf2_oo_lane2_rt13.bed.log 2>&1 < /dev/null &
 
+nohup python /groups/Kimble/Common/fog_iCLIP/pre_calls/src/collapse_duplicate_tags_for_cims.py bed_uncollapsed/fbf2_sp_lane1_rt14.bed bed_collapsed/ > fbf2_sp_lane1_rt14.bed.log 2>&1 < /dev/null &
+nohup python /groups/Kimble/Common/fog_iCLIP/pre_calls/src/collapse_duplicate_tags_for_cims.py bed_uncollapsed/n2_oo_lane1_rt16.bed bed_collapsed/ > n2_oo_lane1_rt16.bed.log 2>&1 < /dev/null &
+nohup python /groups/Kimble/Common/fog_iCLIP/pre_calls/src/collapse_duplicate_tags_for_cims.py bed_uncollapsed/fbf1_oo_lane2_rt1.bed bed_collapsed/ > fbf1_oo_lane2_rt1.bed.log 2>&1 < /dev/null &
+nohup python /groups/Kimble/Common/fog_iCLIP/pre_calls/src/collapse_duplicate_tags_for_cims.py bed_uncollapsed/fbf1_sp_lane1_rt1.bed bed_collapsed/ > fbf1_sp_lane1_rt1.bed.log 2>&1 < /dev/null &
+nohup python /groups/Kimble/Common/fog_iCLIP/pre_calls/src/collapse_duplicate_tags_for_cims.py bed_uncollapsed/fbf2_oo_lane2_rt11.bed bed_collapsed/ > fbf2_oo_lane2_rt11.bed.log 2>&1 < /dev/null &
+
+nohup python /groups/Kimble/Common/fog_iCLIP/pre_calls/src/collapse_duplicate_tags_for_cims.py bed_uncollapsed/fbf1_sp_lane1_rt6.bed bed_collapsed/ > fbf1_sp_lane1_rt6.bed.log 2>&1 < /dev/null &
+nohup python /groups/Kimble/Common/fog_iCLIP/pre_calls/src/collapse_duplicate_tags_for_cims.py bed_uncollapsed/fbf1_sp_lane1_rt9.bed bed_collapsed/ > fbf1_sp_lane1_rt9.bed.log 2>&1 < /dev/null &
+nohup python /groups/Kimble/Common/fog_iCLIP/pre_calls/src/collapse_duplicate_tags_for_cims.py bed_uncollapsed/fbf2_sp_lane1_rt2.bed bed_collapsed/ > fbf2_sp_lane1_rt2.bed.log 2>&1 < /dev/null &
+nohup python /groups/Kimble/Common/fog_iCLIP/pre_calls/src/collapse_duplicate_tags_for_cims.py bed_uncollapsed/n2_oo_lane1_rt15.bed bed_collapsed/ > n2_oo_lane1_rt15.bed.log 2>&1 < /dev/null &
+
+'''
 if __name__ == '__main__':
     if len(sys.argv) != 3:
         print "Run as " \
@@ -69,16 +87,3 @@ if __name__ == '__main__':
     outdir = sys.argv[2]
     run(indir, outdir)
 
-
-"""
-
--bash-4.1$ python /groups/Kimble/Common/fog_iCLIP/pre_calls/src/bed_to_wig.py bed_uncollapsed/ bedgraphs
-bed_uncollapsed/exp_fbf1_CGGA.bed
-bed_uncollapsed/exp_fbf1_TGGC.bed
-
-bed_uncollapsed/exp_fbf1_GGTT.bed
-^[[Cbed_uncollapsed/exp_fbf2_GGTT.bed
-bed_uncollapsed/exp_fbf2_GGCA.bed
-bed_uncollapsed/exp_fbf2_TGGC.bed
-Write failed: Broken pipe
-"""
