@@ -13,8 +13,8 @@ def get_as_val(line):
 
 def get_max_map_val(map_list):
     name_to_as = dict([(x, get_as_val(x)) for x in map_list])
-    ranked_AS_vals = sorted(name_to_as.values(), key=lambda x: x[0])
-    ranked_mapq_vals = sorted(name_to_as.values(), key=lambda x: x[1])
+    ranked_AS_vals = sorted(list(name_to_as.values()), key=lambda x: x[0])
+    ranked_mapq_vals = sorted(list(name_to_as.values()), key=lambda x: x[1])
     if ranked_AS_vals[0][0] != ranked_AS_vals[-1][0]:
         best_map = sorted(map_list, key=lambda x: name_to_as[x][0])[-1]
     elif ranked_mapq_vals[0][1] != ranked_mapq_vals[-1][1]:
@@ -41,7 +41,7 @@ def process(samfile, outfile):
         else:
             uniques[name] = get_max_map_val(by_name[name])
     open(outfile, 'w').write(
-        header + "".join(uniques.values())
+        header + "".join(list(uniques.values()))
     )
 
 
@@ -55,7 +55,7 @@ def run(samfile_or_folder, out_dir='sam_collapse_multi_map/'):
         outsam = out_dir + '/' + os.path.basename(samfile_or_folder)
         process(samfile_or_folder, outsam)
     else:
-        print "Input was not a sam file or folder."
+        print("Input was not a sam file or folder.")
 
 
 if __name__ == '__main__':

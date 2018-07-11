@@ -14,7 +14,7 @@ import argparse
 import collapse_multimapping_reads_to_one_in_sam
 
 def scribe(cmd):
-    print cmd
+    print(cmd)
     os.system(cmd)
 
 
@@ -61,9 +61,9 @@ def count_gaps_in_sam(samfile):
                     hist[0] += 1
             else:
                 hist[0] += 1
-    keys = sorted(hist.keys(), key=lambda x: hist[x])
+    keys = sorted(list(hist.keys()), key=lambda x: hist[x])
     for k in keys:
-        print 'gap\t{k}:\t{n}'.format(k=k, n=hist[k])
+        print('gap\t{k}:\t{n}'.format(k=k, n=hist[k]))
 
 
 def convert_sam_to_bed(samname):
@@ -108,7 +108,7 @@ def run(args, paths=None):
             if as_flag is not None:
                 as_value = int(as_flag.group(1))
             else:
-                print "No AS value?"
+                print("No AS value?")
             if as_value < 20: continue
             outli += li
         open('uniquely_mapping_20_AS/{a}'.format(a=os.path.basename(sam)), 'w').write(header + outli)
@@ -126,22 +126,22 @@ def run(args, paths=None):
 def create_splice_junctions_file(args, gtf_file, sjdb_file):
     outname = sjdb_file
     if os.path.exists(outname):
-        print "Using splice junctions file " + outname
+        print("Using splice junctions file " + outname)
         return
     else:
-        print "Writing to splice junctions file " + outname
+        print("Writing to splice junctions file " + outname)
     outli = ''
     with open(gtf_file) as f:
         for li in [x for x in f if x.split('\t')[2] == 'exon']:
             outli += li
     open(outname, 'w').write(outli)
-    print "\t... Created splice juntions file in GFF format " + outname
+    print("\t... Created splice juntions file in GFF format " + outname)
 
 
 def call_star(args, paths=None):
     in_dir = args.input_dir
     for fastq_filename in glob.glob(in_dir + '/*.fastq'):
-        print fastq_filename
+        print(fastq_filename)
         bname = os.path.basename(fastq_filename).partition('.fastq')[0]
         # CSEQ parameters. http://psb.stanford.edu/psb-online/proceedings/psb16/kassuhn.pdf
         # Defaults changed:
@@ -164,7 +164,7 @@ STAR --alignIntronMax 1 --sjdbGTFfile {sjdb} \
         outname = bname + '_Aligned.out.sam'
         fixed_name = outname.partition('_Aligned.out.sam')[0] + '.sam'
         if os.path.exists(outname) or os.path.exists('sams/{0}'.format(fixed_name)):
-            print "{0} already exists, skipping...".format(outname)
+            print("{0} already exists, skipping...".format(outname))
             continue
 #        print cmd
 #        os.system(cmd)
@@ -209,7 +209,7 @@ STAR --alignIntronMax 1 --sjdbGTFfile annotation.gtf --outSAMunmapped "Within" \
 
 def sort_and_index_sam(in_dir='sams/'):
     for sam in glob.glob('{a}/*.sam'.format(a=in_dir)):
-        print sam
+        print(sam)
         convert_sam_to_bed(sam)
         # bed_to_wig.run('sams/', 'bedgraphs/')
         bname = os.path.basename(sam).partition('.sam')[0]
@@ -272,7 +272,7 @@ def get_lines_with_mapq_val(samn='', mapq='-1', include_header=True):
                 continue
             s = li.split('\t')
             if len(s) < 5:
-                print "Syntax error in sam file: {0}".format(li)
+                print("Syntax error in sam file: {0}".format(li))
                 sys.exit()
             if s[4] == mapq: outli += li
     return outli

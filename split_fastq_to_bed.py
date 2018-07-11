@@ -15,6 +15,7 @@ def scribe(cmd):
 
 def run(a_dir, lib=None):
     num_fastq = len(glob.glob(a_dir + '/*.fastq'))
+    #num_fastq += len(glob.glob(a_dir + '/*fastq.gz'))
     paths = {
         'star': '/opt/STAR-STAR_2.4.2a/bin/Linux_x86_64/STAR',
         'indexes': '/opt/STAR-STAR_2.4.2a/bin/Linux_x86_64/indexes/',
@@ -34,6 +35,7 @@ def run(a_dir, lib=None):
             return False
     if num_fastq > 0:
         out_dir = 'temp_adapter_in_name/'
+
         move_barcode_to_name_if_not_present(a_dir, out_dir=out_dir)
         clip_adapters_if_not_already_clipped(
             out_dir, 'temp_clipped/', args)
@@ -41,6 +43,8 @@ def run(a_dir, lib=None):
         map_with_star.run(args, paths=paths)
         scribe('python write_commands_for_collapsing.py')
 
+    else:
+        raise IOError("No fastq files found in {}".format(a_dir))
 # a_dir -> temp_adapter_in_name/ -> temp_fastq/ -> temp_clipped/ -> sams/
 # -> temp_sam_collapse_multi_map/ -> sams/
 
@@ -53,11 +57,16 @@ def clear_directory_of_output_files(_dir):
 
 def move_barcode_to_name_if_not_present(a_dir, out_dir='adapter_in_name'):
     for fname in glob.glob(a_dir + '*.fastq'):
+
         first_line = open(fname).readline()
+        
         if first_line[0] != '@':
             print("Error: fastq file does not start with @...")
             continue
-        if '#' in first_line: continue
+        
+        if '#' in first_line:
+            continue
+
         move_barcode_to_name_in_fastq.move_barcode_to_name_in_fastq(
             fname, out_dir)
 
