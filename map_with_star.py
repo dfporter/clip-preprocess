@@ -67,7 +67,7 @@ def count_gaps_in_sam(samfile):
 
 
 def convert_sam_to_bed(samname):
-    cmd = 'sam2bed {i} {d}/{b}'.format(
+    cmd = 'sam2bed < {i} > {d}/{b}'.format(
         i=samname, d='bed_uncollapsed/',
         b=os.path.basename(samname).partition('.sam')[0] + '.bed'
     )
@@ -84,36 +84,57 @@ def run(args, paths=None):
     #        'star': '/groups/Kimble/Aman\ Prasad/clip/STAR-STAR_2.4.2a/bin/Linux_x86_64/STAR',
     if paths is None:
         paths={
-        'indexes': '/opt/STAR-STAR_2.4.2a/bin/Linux_x86_64/indexes/',
+#        'indexes': '/opt/STAR-STAR_2.4.2a/bin/Linux_x86_64/indexes/',
         'gtf': '/opt/lib/Caenorhabditis_elegans.WBcel235.78.noheader.gtf',
+#        'star': '/Users/dfporter/Desktop/macbook_air_desktop/shared//star/STAR_2.4.2a/bin/MacOSX_x86_64/STAR',
+        'star': '/Volumes/mond//STAR-STAR_2.4.2a/bin/MacOSX_x86_64/STAR',
+#        'indexes': '/Volumes/Seagate/STAR-STAR_2.4.2a/bin/Linux_x86_64/indexes/',
+        'indexes': '/Volumes/mond/STAR-STAR_2.4.2a/bin/Linux_x86_64/indexes/',
+
         'sjdb': '/opt/lib/sjdb.txt'}
-    paths['sjdb'] = '/opt/lib/sjdb.txt'
+#    paths['sjdb'] = '/opt/lib/sjdb.txt'
     create_splice_junctions_file(args, paths['gtf'], paths['sjdb'])
+
     paths['gtf'] = paths['sjdb']
+
     mk_dirs()
-#    call_star(args, paths=paths)
+
+    call_star(args, paths=paths)
+
     split_multimapping_reads(
-            in_dir='sams/',
-            unique_dir='uniquely_mapping/', multi_dir='map_to_two/', unmapped_dir='unmapped/')
+            in_dir='sams/', unique_dir='uniquely_mapping/',
+            multi_dir='map_to_two/', unmapped_dir='unmapped/')
+
     os.system('mkdir uniquely_mapping_20_AS')
+
     for sam in glob.glob('uniquely_mapping/*.sam'):
         header = ''
         outli = ''
+
         for li in open(sam).readlines():
+
             if li[0] == '@':
                 header += li
                 continue
+
             s = li.rstrip('\n').split('\t')
             as_flag = re.match('.*AS:i:(\d+).*', str(s[11:]))
+
             if as_flag is not None:
                 as_value = int(as_flag.group(1))
             else:
                 print("No AS value?")
-            if as_value < 20: continue
+
+            if as_value < 20:
+                continue
+
             outli += li
+
         open('uniquely_mapping_20_AS/{a}'.format(a=os.path.basename(sam)), 'w').write(header + outli)
+
     if not os.path.exists('unfiltered_star_sams_output/'):
         os.system('mkdir unfiltered_star_sams_output/')
+
     os.system('rsync -r -v sams/ unfiltered_star_sams_output/')
     os.system('rsync -r -v uniquely_mapping_20_AS/ sams/')
     #collapse_multimapping_reads_to_one_in_sam.run('sams/', out_dir='temp_sam_collapse_multi_map/')
@@ -139,7 +160,9 @@ def create_splice_junctions_file(args, gtf_file, sjdb_file):
 
 
 def call_star(args, paths=None):
+
     in_dir = args.input_dir
+
     for fastq_filename in glob.glob(in_dir + '/*.fastq'):
         print(fastq_filename)
         bname = os.path.basename(fastq_filename).partition('.fastq')[0]
@@ -149,8 +172,10 @@ def call_star(args, paths=None):
         # --alignEndsType EndToEnd for CSEQ.
         # We've added the --runThreadN for multithreading (faster speed, same output).
         #
+
+        # Normally --runThreadN 8
         cmd = '''
-STAR --alignIntronMax 1 --sjdbGTFfile {sjdb} \
+{star} --alignIntronMax 1 --sjdbGTFfile {sjdb} \
 --genomeDir {indexes} --readFilesIn {rin} --outSAMunmapped "Within" \
 --outFilterMultimapNmax 3 --outFilterMismatchNmax 2 \
 --seedSearchStartLmax 6 --winAnchorMultimapNmax 10000 --alignEndsType Local \
@@ -158,7 +183,8 @@ STAR --alignIntronMax 1 --sjdbGTFfile {sjdb} \
 --outFilterMultimapScoreRange 0  --runThreadN 8 \
 --outFileNamePrefix {prefix} \
 --alignTranscriptsPerReadNmax 100000
-'''.format(sjdb=paths['sjdb'],
+'''.format(
+        star=paths['star'], sjdb=paths['sjdb'],
         indexes=paths['indexes'], rin=fastq_filename, prefix=bname + '_')
         # Use --readMapNumber 10000 to only map the first 10,000 reads.
         outname = bname + '_Aligned.out.sam'
@@ -166,10 +192,10 @@ STAR --alignIntronMax 1 --sjdbGTFfile {sjdb} \
         if os.path.exists(outname) or os.path.exists('sams/{0}'.format(fixed_name)):
             print("{0} already exists, skipping...".format(outname))
             continue
-#        print cmd
-#        os.system(cmd)
-#        os.system('mv {i} {o}'.format(i=outname, o=fixed_name))
-#        os.system('mv {o} sams/{o}'.format(o=fixed_name))
+        print(cmd)
+        os.system(cmd)
+        os.system('mv {i} {o}'.format(i=outname, o=fixed_name))
+        os.system('mv {o} sams/{o}'.format(o=fixed_name))
 
 
 """
@@ -216,7 +242,7 @@ def sort_and_index_sam(in_dir='sams/'):
         scribe('samtools view -bS {i} > {o}'.format(
             i=sam, o=bname + '.bam'
         ))
-        scribe('samtools sort {o} {s}'.format(
+        scribe('samtools sort {o} -T temp -o {s}.bam'.format(
             o=bname + '.bam',
             s=bname
         ))

@@ -17,8 +17,11 @@ def run(a_dir, lib=None):
     num_fastq = len(glob.glob(a_dir + '/*.fastq'))
     #num_fastq += len(glob.glob(a_dir + '/*fastq.gz'))
     paths = {
-        'star': '/opt/STAR-STAR_2.4.2a/bin/Linux_x86_64/STAR',
-        'indexes': '/opt/STAR-STAR_2.4.2a/bin/Linux_x86_64/indexes/',
+#        'star': '/opt/STAR-STAR_2.4.2a/bin/Linux_x86_64/STAR',
+        'star': '../../star/STAR_2.4.2a/bin/MacOSX_x86_64/STAR',
+        #'indexes': '/opt/STAR-STAR_2.4.2a/bin/Linux_x86_64/indexes/',
+        'indexes': '/Volumes/Seagate/STAR-STAR_2.4.2a/bin/Linux_x86_64/indexes/',
+        'sjdb': '/opt/lib/sjdb.txt',
         'gtf': '/opt/lib/Caenorhabditis_elegans.WBcel235.78.noheader.gtf'}
     if lib is None:
         print('Using default paths:')
@@ -29,18 +32,23 @@ def run(a_dir, lib=None):
         if not os.path.exists(path):
             print("Missing %s" % path)
             all_ok = False
+
     if not all_ok:
         if input("Will not be able to run STAR. Continue anyway [y/n]?"
                      )[0].upper() != "Y":
-            return False
+            raise IOError("Could not find files to run STAR and declined to continue.")
+
     if num_fastq > 0:
         out_dir = 'temp_adapter_in_name/'
 
         move_barcode_to_name_if_not_present(a_dir, out_dir=out_dir)
+
         clip_adapters_if_not_already_clipped(
             out_dir, 'temp_clipped/', args)
+
         args.input_dir = 'temp_clipped/'
         map_with_star.run(args, paths=paths)
+
         scribe('python write_commands_for_collapsing.py')
 
     else:
@@ -72,41 +80,68 @@ def move_barcode_to_name_if_not_present(a_dir, out_dir='adapter_in_name'):
 
 
 def clip_adapters_if_not_already_clipped(in_dir, out_dir, args):
+
+    # Do we need to remove adapters, or are they already removed?
+    # Check the first N sequences to determine.
     n_lines_to_check = 4e3
     need_to_clip = True
+
     for _file in glob.glob(in_dir + '/*.fastq'):
+
         fastq_reader = HTSeq.FastqReader(_file)
+
         read_lens = set()
+
         for i, read in enumerate(fastq_reader):
             read_lens.add(len(read.seq))
-            if i > n_lines_to_check: break
-        if len([x for x in read_lens if x>20]) > 2:
+
+            if i > n_lines_to_check:
+                break
+
+        if len([x for x in read_lens if x<20]) > 2:
             need_to_clip = False
             break
+
     if not need_to_clip:
         print("Adapters in {0} are apparently already clipped...".format(in_dir))
         return
+
+    # If adapters are not already removed:
     print("Clipping adapters in {0}...".format(in_dir))
+
     if in_dir == out_dir:
         print("Input and output dir can't be the same.")
         sys.exit()
+
     args.input_dir = in_dir
     args.output_dir = 'temp_fastq/'
-    if os.path.exists('temp_fastq/'): os.system('rm -r temp_fastq/')
+
+    if os.path.exists('temp_fastq/'):
+        os.system('rm -r temp_fastq/')
+
+    # Remove the 3' linker first:
     args.adapter = ''
     args.three_prime_linker = True
     args.rt_primer = False
+
     clip_adapter.run(args)
-    for k, v in list({'three_prime_linker': False, 'rt_primer': True,
-    'input_dir': 'temp_fastq/', 'output_dir': out_dir, 'adapter': ''}.items()):
+
+    # Remove the RT primer second:
+    for k, v in list(
+        {'three_prime_linker': False, 'rt_primer': True,
+        'input_dir': 'temp_fastq/', 'output_dir': out_dir, 'adapter': ''}.items()):
         setattr(args, k, v)
+
     clip_adapter.run(args)
 
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('-i', '--input',
-                        help='Input folder of fastq files,\
-sam files or bed files')
+    
+    parser.add_argument(
+        '-i', '--input',
+        help='Input folder of fastq files, sam files or bed files')
+
     args = parser.parse_args()
+    
     run(args.input)
