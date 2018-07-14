@@ -14,8 +14,8 @@ def scribe(cmd):
 
 
 def run(a_dir, lib=None):
-    num_fastq = len(glob.glob(a_dir + '/*.fastq'))
-    #num_fastq += len(glob.glob(a_dir + '/*fastq.gz'))
+
+    # Initialize paths.
     paths = {
 #        'star': '/opt/STAR-STAR_2.4.2a/bin/Linux_x86_64/STAR',
         'star': '../../star/STAR_2.4.2a/bin/MacOSX_x86_64/STAR',
@@ -23,10 +23,13 @@ def run(a_dir, lib=None):
         'indexes': '/Volumes/Seagate/STAR-STAR_2.4.2a/bin/Linux_x86_64/indexes/',
         'sjdb': '/opt/lib/sjdb.txt',
         'gtf': '/opt/lib/Caenorhabditis_elegans.WBcel235.78.noheader.gtf'}
+    
     if lib is None:
         print('Using default paths:')
     else:
         paths = lib
+
+    # Found all the expected files?
     all_ok = True
     for path in list(paths.values()):
         if not os.path.exists(path):
@@ -38,7 +41,8 @@ def run(a_dir, lib=None):
                      )[0].upper() != "Y":
             raise IOError("Could not find files to run STAR and declined to continue.")
 
-    if num_fastq > 0:
+    # Process split fastqs into bed files of mapped reads ready for collapsing.
+    if len(glob.glob(a_dir + '/*.fastq')) > 0:
         out_dir = 'temp_adapter_in_name/'
 
         move_barcode_to_name_if_not_present(a_dir, out_dir=out_dir)

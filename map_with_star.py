@@ -130,7 +130,7 @@ def run(args, paths=None):
 
             outli += li
 
-        open('uniquely_mapping_20_AS/{a}'.format(a=os.path.basename(sam)), 'w').write(header + outli)
+        open('uniquely_mapping_20_AS/{}'.format(os.path.basename(sam)), 'w').write(header + outli)
 
     if not os.path.exists('unfiltered_star_sams_output/'):
         os.system('mkdir unfiltered_star_sams_output/')
@@ -160,7 +160,56 @@ def create_splice_junctions_file(args, gtf_file, sjdb_file):
 
 
 def call_star(args, paths=None):
+    """
+[dfporter@ad.wisc.edu@kimble-1 map_params_taken_from_sam_files_in_old_mapping_data_for_sp_oo]$ samtools view -H /mnt/Groups/KimbleGrp/General/Common/fbf_celltype/old_mapping_data_for_sp_oo/old/sams/n2_oo_lane1_rt15.sam 
+@HD VN:1.4
+@SQ SN:I    LN:15072434
+@SQ SN:II   LN:15279421
+@SQ SN:III  LN:13783801
+@SQ SN:IV   LN:17493829
+@SQ SN:V    LN:20924180
+@SQ SN:X    LN:17718942
+@SQ SN:MtDNA    LN:13794
+@PG ID:STAR PN:STAR VN:STAR_2.4.2a  CL:/groups/Kimble/Aman Prasad/clip/STAR-STAR_2.4.2a/bin/Linux_x86_64/STAR   --runThreadN 5  
+ --genomeDir "/groups/Kimble/Aman Prasad/clip/STAR-STAR_2.4.2a/bin/Linux_x86_64/indexes/"   --readFilesIn adapter_moved_to_name/n2_oo_lane1_rt15.fastq  
+     --readMapNumber 18446744073709551615   --outFileNamePrefix n2_oo_lane1_rt15_   --outReadsUnmapped Fastx   --outSAMstrandField intronMotif  
+      --outFilterScoreMin 20   --outFilterIntronMotifs RemoveNoncanonicalUnannotated   --alignIntronMax 1000   --alignSJoverhangMin 100  
+       --alignSJDBoverhangMin 15   --sjdbGTFfile /groups/Kimble/Common/fog_iCLIP/calls/lib/Caenorhabditis_elegans.WBcel235.78.noheader.gtf
+@CO user command line: /groups/Kimble/Aman Prasad/clip/STAR-STAR_2.4.2a/bin/Linux_x86_64/STAR --runThreadN 5 
+--genomeDir "/groups/Kimble/Aman Prasad/clip/STAR-STAR_2.4.2a/bin/Linux_x86_64/indexes/" --alignIntronMax 1000 
+--alignSJoverhangMin 100 --alignSJDBoverhangMin 15 --sjdbGTFfile /groups/Kimble/Common/fog_iCLIP/calls/lib/Caenorhabditis_elegans.WBcel235.78.noheader.gtf
+ --outFilterIntronMotifs RemoveNoncanonicalUnannotated --outFilterScoreMin 20 --readMapNumber -1 --outReadsUnmapped Fastx 
+ --outSAMstrandField intronMotif --readFilesIn adapter_moved_to_name/n2_oo_lane1_rt15.fastq --outFileNamePrefix n2_oo_lane1_rt15_
 
+
+# Original Parameters
+        cmd = '''STAR --runThreadN 8 \
+        --genomeDir {indexes}\
+         --alignIntronMax 1000 --alignSJoverhangMin 100 --alignSJDBoverhangMin 15\
+         --sjdbGTFfile {gtf}\
+         --outFilterIntronMotifs RemoveNoncanonicalUnannotated\
+         --outFilterScoreMin 20\
+         --outReadsUnmapped Fastx\
+         --outSAMstrandField intronMotif\
+         --readFilesIn {rin} --outFileNamePrefix {prefx}'''.format(
+            rin=fastq_filename,
+            prefx=bname + '_', indexes=paths['indexes'],
+            gtf=paths['gtf'])''')
+
+# CSEQ with --alignEndsType and --outFileterMultimapScoreRange changed
+{star} --alignIntronMax 1 \
+--sjdbGTFfile {sjdb} \
+--genomeDir {indexes} \
+--readFilesIn {rin} \
+--outSAMunmapped "Within" \
+--outFilterMultimapNmax 3 --outFilterMismatchNmax 2 \
+--seedSearchStartLmax 6 --winAnchorMultimapNmax 10000 --alignEndsType Local \
+--sjdbGTFtagExonParentTranscript transcript_id \
+--outFilterMultimapScoreRange 0  --runThreadN 8 \
+--outFileNamePrefix {prefix} \
+--alignTranscriptsPerReadNmax 100000
+
+"""
     in_dir = args.input_dir
 
     for fastq_filename in glob.glob(in_dir + '/*.fastq'):
@@ -172,11 +221,37 @@ def call_star(args, paths=None):
         # --alignEndsType EndToEnd for CSEQ.
         # We've added the --runThreadN for multithreading (faster speed, same output).
         #
-
         # Normally --runThreadN 8
+CL:/groups/Kimble/Aman Prasad/clip/STAR-STAR_2.4.2a/bin/Linux_x86_64/STAR  
+ --runThreadN 5   --genomeDir "/groups/Kimble/Aman Prasad/clip/STAR-STAR_2.4.2a/bin/Linux_x86_64/indexes/"  
+  --readFilesIn adapter_moved_to_name/n2_oo_lane1_rt3.fastq    
+    --readMapNumber 18446744073709551615   --outFileNamePrefix n2_oo_lane1_rt3_   
+    --outReadsUnmapped Fastx   --outSAMstrandField intronMotif   --outFilterScoreMin 20 
+     --outFilterIntronMotifs RemoveNoncanonicalUnannotated   --alignIntronMax 1000   
+     --alignSJoverhangMin 100   --alignSJDBoverhangMin 15   
+     --sjdbGTFfile /groups/Kimble/Common/fog_iCLIP/calls/lib/Caenorhabditis_elegans.WBcel235.78.noheader.gtf
+
         cmd = '''
-{star} --alignIntronMax 1 --sjdbGTFfile {sjdb} \
---genomeDir {indexes} --readFilesIn {rin} --outSAMunmapped "Within" \
+{star} --alignIntronMax 1000
+--sjdbGTFfile {sjdb} \
+--genomeDir {indexes} \
+--readFilesIn {rin} \
+--alignSJoverhangMin 100 --alignSJDBoverhangMin 15 \
+--outFilterIntronMotifs RemoveNoncanonicalUnannotated \
+--outFilterScoreMin 20 --readMapNumber -1 \
+--outReadsUnmapped Fastx --outSAMstrandField intronMotif \
+--outFileNamePrefix {prefix} \
+--runThreadN 16
+'''.format(
+        star=paths['star'], sjdb=paths['sjdb'],
+        indexes=paths['indexes'], rin=fastq_filename, prefix=bname + '_')
+
+    alt_cmd = '''
+{star} --alignIntronMax 1 \
+--sjdbGTFfile {sjdb} \
+--genomeDir {indexes} \
+--readFilesIn {rin} \
+--outSAMunmapped "Within" \
 --outFilterMultimapNmax 3 --outFilterMismatchNmax 2 \
 --seedSearchStartLmax 6 --winAnchorMultimapNmax 10000 --alignEndsType Local \
 --sjdbGTFtagExonParentTranscript transcript_id \
@@ -186,6 +261,7 @@ def call_star(args, paths=None):
 '''.format(
         star=paths['star'], sjdb=paths['sjdb'],
         indexes=paths['indexes'], rin=fastq_filename, prefix=bname + '_')
+
         # Use --readMapNumber 10000 to only map the first 10,000 reads.
         outname = bname + '_Aligned.out.sam'
         fixed_name = outname.partition('_Aligned.out.sam')[0] + '.sam'
@@ -263,44 +339,60 @@ def split_multimapping_reads(
     in_dir='sams',
     unique_dir='uniquely_mapping/', multi_dir='multimapping/',
     unmapped_dir='unmapped/'):
-    if not os.path.exists(unique_dir):
-        os.system('mkdir ' + unique_dir)
-    if not os.path.exists(multi_dir):
-        os.system('mkdir ' + multi_dir)
-    if not os.path.exists(unmapped_dir):
-        os.system('mkdir ' + unmapped_dir)
+
+    for folder in [unique_dir, multi_dir, unmapped_dir]:
+        if not os.path.exists(folder):
+            os.system('mkdir {}'.format(folder))
+
     for sam in glob.glob('{a}/*.sam'.format(a=in_dir)):
         # bed_to_wig.run('sams/', 'bedgraphs/')
         bname = os.path.basename(sam).partition('.sam')[0]
         header = ''
         chosen_from_multi = ''
-        with open('{d}/{a}'.format(d=unique_dir, a=os.path.basename(sam)), 'w') as uniquef:
+
+        # Write alignments with MAPQ=255 as uniquely mapping to a separate directory.
+        with open('{}/{}'.format(unique_dir, os.path.basename(sam)), 'w') as uniquef:
             unique = get_lines_with_mapq_val(samn=sam, mapq='255')
             uniquef.write(unique)
+
+            # Also write these to the multimappers directory (includes all reads).
             with open('{d}/{a}'.format(d=multi_dir, a=os.path.basename(sam)), 'w') as multif:
                 multif.write(unique)
+        
+        # Write multimapping reads (MAPQ=3) to the multimappers directory.
         with open('{d}/{a}'.format(d=multi_dir, a=os.path.basename(sam)), 'a') as multif:
             multi = get_lines_with_mapq_val(samn=sam, mapq='3', include_header=False)
             multif.write(multi)
+
+        # Write unmapped reads (MAPQ=0) to a directory of unmapped reads.
         with open('{d}/{a}'.format(d=unmapped_dir, a=os.path.basename(sam)), 'w') as unmapf:
             unmapped = get_lines_with_mapq_val(samn=sam, mapq='0')
             unmapf.write(unmapped)
 
 
 def get_lines_with_mapq_val(samn='', mapq='-1', include_header=True):
-    if type(mapq) != type(''): mapq = str(mapq)
+    
+    if type(mapq) != type(''):
+        mapq = str(mapq)
+    
     outli = ''
     with open(samn, 'r') as f:
         for li in f:
+    
             if li[0] == '@':
                 if include_header:
                     outli += li
                 continue
+
             s = li.split('\t')
+            
             if len(s) < 5:
                 print("Syntax error in sam file: {0}".format(li))
                 sys.exit()
-            if s[4] == mapq: outli += li
+            
+            if s[4] == mapq:
+                outli += li
+    
     return outli
 
 
