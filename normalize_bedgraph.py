@@ -11,13 +11,13 @@ def normalize_wig(bed_folder, input_bedgraphs, output_bedgraphs):
             continue
         bed = '{a}/{b}.bed'.format(
             a=bed_folder, b=re.sub('_[\+-].wig', '', os.path.basename(wig)))
-        print "{a} > {b}".format(a=wig, b=bed)
+        print("{a} > {b}".format(a=wig, b=bed))
         out_bed = output_bedgraphs + '/' + os.path.basename(wig)
-        print "Normalizing {a} / {b} to {c}".format(
-            a=wig, b = bed, c=out_bed)
+        print("Normalizing {a} / {b} to {c}".format(
+            a=wig, b = bed, c=out_bed))
 
         if os.path.exists(out_bed):
-            print "{A} file exists, skipping..".format(A=out_bed)
+            print("{A} file exists, skipping..".format(A=out_bed))
             continue
         total_reads = float(sum([1 for line in open(bed)]) - 1)
         wig_fh = open(wig, 'r')

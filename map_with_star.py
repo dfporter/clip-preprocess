@@ -79,6 +79,23 @@ def mk_dirs():
         if not os.path.exists(_dir):
             os.system('mkdir ' + _dir)
     
+def subset_bed_columns(folder_name):
+
+    if not os.path.exists('subset_bed_columns/'):
+        os.system('mkdir subset_bed_columns/')
+        
+    for fname in glob.glob(folder_name + '/*bed'):
+        ouf = open(
+            'subset_bed_columns/{}'.format(os.path.basename(fname)), 'w')
+        with open(fname) as f:
+            for li in f:
+                s = li.split('\t')[:6]
+                s[4] = '0'
+                li = '\t'.join(s) + '\n'
+
+                ouf.write(li)
+
+        ouf.close()
 
 def run(args, paths=None):
     #        'star': '/groups/Kimble/Aman\ Prasad/clip/STAR-STAR_2.4.2a/bin/Linux_x86_64/STAR',
@@ -222,14 +239,14 @@ def call_star(args, paths=None):
         # We've added the --runThreadN for multithreading (faster speed, same output).
         #
         # Normally --runThreadN 8
-CL:/groups/Kimble/Aman Prasad/clip/STAR-STAR_2.4.2a/bin/Linux_x86_64/STAR  
- --runThreadN 5   --genomeDir "/groups/Kimble/Aman Prasad/clip/STAR-STAR_2.4.2a/bin/Linux_x86_64/indexes/"  
-  --readFilesIn adapter_moved_to_name/n2_oo_lane1_rt3.fastq    
-    --readMapNumber 18446744073709551615   --outFileNamePrefix n2_oo_lane1_rt3_   
-    --outReadsUnmapped Fastx   --outSAMstrandField intronMotif   --outFilterScoreMin 20 
-     --outFilterIntronMotifs RemoveNoncanonicalUnannotated   --alignIntronMax 1000   
-     --alignSJoverhangMin 100   --alignSJDBoverhangMin 15   
-     --sjdbGTFfile /groups/Kimble/Common/fog_iCLIP/calls/lib/Caenorhabditis_elegans.WBcel235.78.noheader.gtf
+#CL:/groups/Kimble/Aman Prasad/clip/STAR-STAR_2.4.2a/bin/Linux_x86_64/STAR  
+# --runThreadN 5   --genomeDir "/groups/Kimble/Aman Prasad/clip/STAR-STAR_2.4.2a/bin/Linux_x86_64/indexes/"  
+#  --readFilesIn adapter_moved_to_name/n2_oo_lane1_rt3.fastq    
+#    --readMapNumber 18446744073709551615   --outFileNamePrefix n2_oo_lane1_rt3_   
+#    --outReadsUnmapped Fastx   --outSAMstrandField intronMotif   --outFilterScoreMin 20 
+#     --outFilterIntronMotifs RemoveNoncanonicalUnannotated   --alignIntronMax 1000   
+#     --alignSJoverhangMin 100   --alignSJDBoverhangMin 15   
+#     --sjdbGTFfile /groups/Kimble/Common/fog_iCLIP/calls/lib/Caenorhabditis_elegans.WBcel235.78.noheader.gtf
 
         cmd = '''
 {star} --alignIntronMax 1000
@@ -246,7 +263,7 @@ CL:/groups/Kimble/Aman Prasad/clip/STAR-STAR_2.4.2a/bin/Linux_x86_64/STAR
         star=paths['star'], sjdb=paths['sjdb'],
         indexes=paths['indexes'], rin=fastq_filename, prefix=bname + '_')
 
-    alt_cmd = '''
+        alt_cmd = '''
 {star} --alignIntronMax 1 \
 --sjdbGTFfile {sjdb} \
 --genomeDir {indexes} \
@@ -400,6 +417,21 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(
         description="Always writes to a ./sam/ directory.")
     parser.add_argument('-i', '--input_dir')
+    parser.add_argument('-s', '--sams_input', default='',
+        help="Don't map, just convert this sams directory to bed.")
+    parser.add_argument('-c', '--subset_bed_columns', default='',
+        help="Just subset the column of the bed files in this directory to a format for CIMS.")
     args = parser.parse_args()
-    run(args)
+
+    print(args)
+    if args.subset_bed_columns != '':
+        subset_bed_columns(args.subset_bed_columns)
+
+    elif args.sams_input != '':
+        for sam in glob.glob('{a}/*.sam'.format(a=args.sams_input)):
+            print(sam)
+            convert_sam_to_bed(sam)
+    
+    else:
+        run(args)
     

@@ -13,6 +13,8 @@ import argparse
 
 def add_to_ga(infile, global_ga):
     ga = HTSeq.GenomicArray('auto', stranded=True)
+
+    above_len_cutoff = 0
     with open(infile, 'r') as f:
         i = 0
         for i, li in enumerate(f):
@@ -20,13 +22,17 @@ def add_to_ga(infile, global_ga):
             iv = HTSeq.GenomicInterval(
                 s[0], int(s[1]), int(s[2]), s[5]
             )
+
             if (int(s[2]) - int(s[1])) > 101:
-                print li
-                sys.stdin.readline()
+                #print('{}:'.format(i), li)
+                #sys.stdin.readline()
+                above_len_cutoff += 1
+                continue
+                
             ga[iv] += 1
             global_ga[iv] += 1
-    print "\t...{i} reads in bed file {z}.".format(
-        i=i, z=infile)
+    print("\t...{i} reads in bed file {z}.".format(
+        i=i, z=infile))
     return ga
 
 
@@ -45,7 +51,7 @@ def run(input_bed, output_bedgraph_unnorm, output_bedgraph_norm):
                 re.match('.*fbf.*', os.path.basename(infile)) is not None):
             # if re.match('.*fbf1.*', os.path.basename(infile)) is not None:
             #     continue
-            print infile
+            print(infile)
             ga = add_to_ga(infile, ga_all_exp)
         elif (re.match('.*control.*', os.path.basename(infile)) is not None) or (
             re.match('.*n2.*', os.path.basename(infile)) is not None):
@@ -55,8 +61,8 @@ def run(input_bed, output_bedgraph_unnorm, output_bedgraph_norm):
         outname = "{d}/{b}".format(
             d=output_bedgraph_unnorm,
             b=os.path.basename(infile).partition('.bed')[0])
-        print "Creating a bedgraph {c} from {a}...".format(
-            c=outname, a=infile)
+        print("Creating a bedgraph {c} from {a}...".format(
+            c=outname, a=infile))
         outname_plus = outname + '_+.wig'
         ga.write_bedgraph_file(outname_plus, strand='+')
         outname_minus = outname + '_-.wig'

@@ -5,7 +5,7 @@ import sys
 
 """
 export PERL5LIB=/groups/Kimble/Aman\ Prasad/clip/plib/
-
+export PERL5LIB=/Users/dfporter/Desktop/macbook_air_Desktop/shared/sp_oo/FBF_gendered_gl/plib
 """
 usage = "USAGE: <input dir> <output dir>"
 
@@ -29,7 +29,7 @@ else:
     out_dir = sys.argv[2]
 
 print("export PERL5LIB=/groups/Kimble/Aman\ Prasad/clip/plib/")
-
+print("export PERL5LIB=/Users/dfporter/Desktop/macbook_air_Desktop/shared/sp_oo/FBF_gendered_gl/plib")
 if not os.path.exists('bed_collapsed'):
     os.system('mkdir bed_collapsed')
 
